@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat ao Vivo</title>
+  <link rel="stylesheet" href="./style/main.css"/>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+  <script src="/app.js"></script>
+</head>
+<body>
+<noscript><h2 class="noscript-warn">Ative o JavaScript para usar o chat.</h2></noscript>
+
+<main class="wrap">
+  <section class="card">
+    <header class="card__head">
+      <h1 class="title">Chat ao Vivo</h1>
+      <p class="subtitle">Conecte-se, envie mensagens e acompanhe em tempo real.</p>
+    </header>
+
+    <form class="stack" onsubmit="return false;">
+      <label class="label" for="user">Usuário</label>
+      <input id="user" class="input" type="text" placeholder="Digite seu usuário" autocomplete="username"/>
+
+      <label class="label" for="message">Mensagem</label>
+      <input id="message" class="input" type="text" placeholder="Digite sua mensagem…"/>
+    </form>
+
+    <div class="actions">
+      <button id="connect" class="btn btn--light" type="button">Conectar</button>
+      <button id="disconnect" class="btn btn--dark" type="button" disabled>Desconectar</button>
+      <button id="send" class="btn btn--primary" type="button">Enviar</button>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="Mensagens do chat">
+      <table id="conversation" class="table-reset">
+        <thead><tr><th>Conversa</th></tr></thead>
+        <tbody id="livechat"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</body>
+</html>

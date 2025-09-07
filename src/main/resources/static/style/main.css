@@ -1,0 +1,114 @@
+/* fundo geral */
+body {
+  margin: 0;
+  background: #fff;         /* branco */
+  color: #000;              /* texto padrão preto */
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* container principal */
+.wrap {
+  width: 100%;
+  max-width: 800px;
+  padding: 30px;
+  background: #fff;
+  border: 4px solid #000;   /* destaque preto */
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+}
+
+/* título e subtítulo */
+.title {
+  font-size: 2rem;
+  margin: 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.subtitle {
+  text-align: center;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+/* inputs */
+.input {
+  width: 100%;
+  background: #000;         /* fundo preto */
+  color: #fff;              /* texto branco */
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.input::placeholder {
+  color: #aaa;
+}
+
+.input:focus {
+  outline: 2px solid #000;
+}
+
+/* botões */
+.btn {
+  background: #000;         /* fundo preto */
+  color: #fff;              /* texto branco */
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #333;         /* preto mais claro ao passar o mouse */
+}
+
+.btn[disabled] {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* área de botões */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+/* tabela de mensagens */
+.table-wrap {
+  margin-top: 20px;
+  border: 2px solid #000;   /* destaque preto */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-reset {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-reset th {
+  background: #000;         /* cabeçalho preto */
+  color: #fff;              /* texto branco */
+  text-align: left;
+  padding: 10px;
+}
+
+.table-reset td {
+  background: #fff;
+  color: #000;
+  padding: 10px;
+  border-top: 1px solid #000;
+}
