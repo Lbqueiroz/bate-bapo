@@ -1,60 +1,97 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://' + window.location.host + '/buildrun-livechat-websocket'
-});
+// app.js — somente front, backend intocado
+(() => {
+  // === conexão STOMP (mesmo endpoint do backend) ===
+  const socketUrl = 'ws://' + window.location.host + '/buildrun-livechat-websocket';
+  const client = new StompJs.Client({ brokerURL: socketUrl });
 
-stompClient.onConnect = (frame) => {
-    setConnected(true);
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topics/livechat', (message) => {
-        updateLiveChat(JSON.parse(message.body).content);
-    });
-};
-
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-};
-
-stompClient.onStompError = (frame) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-};
-
-function setConnected(connected) {
+  // === estado/UI ===
+  function toggleUi(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-}
+    $("#conversation").toggle(!!connected);
+  }
 
-function connect() {
-    stompClient.activate();
-}
+  // === renderização da linha na tabela ===
+  function appendRow(text) {
+    $("#livechat").append('<tr><td>' + text + '</td></tr>');
+  }
 
-function disconnect() {
-    stompClient.deactivate();
-    setConnected(false);
-    console.log("Disconnected");
-}
+  // === lifecycle ===
+  client.onConnect = (frame) => {
+    toggleUi(true);
+    console.log('Conectado:', frame);
 
-function sendMessage() {
-    stompClient.publish({
-        destination: "/app/new-message",
-        body: JSON.stringify({'user': $("#user").val(), 'message': $("#message").val()})
+    // mantém o mesmo tópico do backend
+    client.subscribe('/topics/livechat', (msg) => {
+      try {
+        const payload = JSON.parse(msg.body);
+        // ChatOutpt(String msg) -> {"msg":"..."}
+        const text = payload.msg ?? payload.content ?? String(msg.body);
+        appendRow(text);
+      } catch (e) {
+        // se não vier JSON por algum motivo, joga a string
+        appendRow(msg.body);
+      }
     });
+  };
+
+  client.onWebSocketError = (err) => {
+    console.error('WebSocket error', err);
+  };
+
+  client.onStompError = (frame) => {
+    console.error('STOMP error:', frame.headers['message']);
+    console.error('Detalhes:', frame.body);
+  };
+
+  // === ações ===
+  function doConnect() {
+    client.activate();
+  }
+
+  function doDisconnect() {
+    client.deactivate();
+    toggleUi(false);
+    console.log('Desconectado');
+  }
+
+  function doSend() {
+    const user = $("#user").val();
+    const message = $("#message").val();
+
+    if (!user || !message) {
+      // feedback simples sem alterar HTML
+      $("#message").focus();
+      return;
+    }
+
+    // publica no mesmo destino do backend
+    client.publish({
+      destination: '/app/new-message',
+      body: JSON.stringify({ user, message }) // ChatInput(String user, String message)
+    });
+
     $("#message").val("");
-}
+  }
 
-function updateLiveChat(message) {
-    $("#livechat").append("<tr><td>" + message + "</td></tr>");
-}
-
-$(function () {
+  // === bindings ===
+  $(function () {
+    // evitar submit recarregar página
     $("form").on('submit', (e) => e.preventDefault());
-    $( "#connect" ).click(() => connect());
-    $( "#disconnect" ).click(() => disconnect());
-    $( "#send" ).click(() => sendMessage());
-});
+
+    $("#connect").on('click', doConnect);
+    $("#disconnect").on('click', doDisconnect);
+    $("#send").on('click', doSend);
+
+    // UX: enter para enviar quando focado no #message
+    $("#message").on('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doSend();
+      }
+    });
+
+    // inicia UI desconectada
+    toggleUi(false);
+  });
+})();
